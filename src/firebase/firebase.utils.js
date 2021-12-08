@@ -1,5 +1,5 @@
 import firebase from 'firebase/compat/app'
-import { getFirestore } from 'firebase/firestore'
+import 'firebase/compat/firestore'
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth"
 
 const config = {
@@ -12,10 +12,35 @@ const config = {
   measurementId: "G-MMH30K6456"
 }
 
+export const createUserProfileDocument = async (userAuth, additionalData) => {
+  if (!userAuth) return;
+
+  const userRef = firestore.doc(`users/${userAuth.uid}`)
+  const snapShop = await userRef.get()
+
+  if (!snapShop.exists) {
+    const { displayName, email } = userAuth
+    const createdAt = new Date()
+
+    try {
+      await userRef.set({
+        displayName,
+        email,
+        createdAt,
+        ...additionalData
+      })
+    } catch (error) {
+      console.log('error creating user', error.message)
+    }
+  }
+
+  return userRef
+}
+
 firebase.initializeApp(config)
 
 export const auth = getAuth()
-export const firestore = getFirestore()
+export const firestore = firebase.firestore()
 
 const provider = new GoogleAuthProvider()
 export const signInWithGoogle = () => signInWithPopup(auth, provider)
