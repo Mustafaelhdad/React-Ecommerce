@@ -14,7 +14,7 @@ const buttonStyles = css`
 const invertedButtonStyles = css`
   background-color: white;
   color: black;
-  border: 1px solid black;
+  border: none;
   &:hover {
     background-color: black;
     color: white;
